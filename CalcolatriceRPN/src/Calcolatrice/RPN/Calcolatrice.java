@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Stack;
-import Database.Connector.*;
 
 public class Calcolatrice {
     //private JPanel pnlCalcolatrice;
@@ -37,11 +36,13 @@ public class Calcolatrice {
     public JPanel pnlCalcolatrice;
     private JButton btnCronologia;
     private JLabel lblNome;
+    private JButton btnInfissa;
 
-
-    private boolean RPNmode = false;
+    private boolean RPNmode;
 
     public Calcolatrice() {
+        RPNmode = false;
+
         Database db = new Database();   //creo oggetto database
         lblNome.setText("Utente: " + db.getUtente().getUsername());      //scrivo nome utente nella label
 
@@ -181,16 +182,23 @@ public class Calcolatrice {
             @Override
             public void actionPerformed(ActionEvent e) {
                 RPNmode = true;
-                btnRPN.setText("RPN: ON");
+                //btnRPN.setText("RPN:ON");
+                JOptionPane.showMessageDialog(null, "RPN mode ON");
             }
         });
-
+        btnInfissa.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RPNmode = false;
+                //btnRPN.setText("RPN:OFF");
+                JOptionPane.showMessageDialog(null, "RPN mode OFF");
+            }
+        });
 
 
         btnUguale.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Database db = new Database();
                 if (RPNmode == false) {
                     String str = txtDisplay.getText();
                     String str1 = infixToPostfix(str);
@@ -211,6 +219,7 @@ public class Calcolatrice {
                 JOptionPane.showMessageDialog(null, db.stampaCronologia(), db.getUtente().getUsername(), JOptionPane.INFORMATION_MESSAGE);
             }
         });
+
     }
 
     public static String infixToPostfix(String infissa) { //converto da notazione infissa a rpn
