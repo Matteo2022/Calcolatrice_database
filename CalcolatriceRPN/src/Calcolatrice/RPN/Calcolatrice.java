@@ -1,9 +1,12 @@
 package Calcolatrice.RPN;
 
+import Database.Connector.Database;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Stack;
+import Database.Connector.*;
 
 public class Calcolatrice {
     //private JPanel pnlCalcolatrice;
@@ -32,10 +35,16 @@ public class Calcolatrice {
     private JButton btnRPN;
     private JButton btnSpazio;
     public JPanel pnlCalcolatrice;
+    private JButton btnCronologia;
+    private JLabel lblNome;
+
 
     private boolean RPNmode = false;
 
     public Calcolatrice() {
+        Database db = new Database();   //creo oggetto database
+        lblNome.setText("Utente: " + db.getUtente().getUsername());      //scrivo nome utente nella label
+
         btnCancella.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -175,17 +184,31 @@ public class Calcolatrice {
                 btnRPN.setText("RPN: ON");
             }
         });
+
+
+
         btnUguale.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Database db = new Database();
                 if (RPNmode == false) {
-                    String str = infixToPostfix(txtDisplay.getText());
-                    String ris = Double.toString(calcoloRPN(str));
-                    txtDisplay.setText(ris);
+                    String str = txtDisplay.getText();
+                    String str1 = infixToPostfix(str);
+                    String ris = Double.toString(calcoloRPN(str1));
+                    txtDisplay.setText(str + " = " + ris);
                 } else {
+                    String str = txtDisplay.getText();
                     String ris = Double.toString(calcoloRPN(txtDisplay.getText()));
-                    txtDisplay.setText(ris);
+                    txtDisplay.setText(str + " = " + ris);
                 }
+
+                db.Cronologia(txtDisplay.getText());    //salvo operazione nel db
+            }
+        });
+        btnCronologia.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, db.stampaCronologia(), db.getUtente().getUsername(), JOptionPane.INFORMATION_MESSAGE);
             }
         });
     }
